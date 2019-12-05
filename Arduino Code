@@ -1,0 +1,154 @@
+int pin1=10; 
+int pin2=11; 
+int pin3=6; 
+int pin4=9; 
+const int trig = A2; 
+const int echo = A1; 
+int distance; 
+long duration; 
+#include <MPU6050.h> 
+#include <Wire.h> 
+#include <I2Cdev.h> 
+MPU6050 accel; 
+int16_t ax,ay,az,gx,gy,gz; 
+int16_t ax0,ay0,az0,gx0,gy0,gz0; 
+void setup() 
+{ 
+  Serial.begin(9600); 
+  pinMode(pin1,OUTPUT); 
+  pinMode(pin2,OUTPUT); 
+  pinMode(pin3,OUTPUT); 
+  pinMode(pin4,OUTPUT); 
+  pinMode(trig,OUTPUT); 
+  pinMode(echo,INPUT); 
+  Serial.println("HEllo"); 
+  accel.initialize(); 
+  Serial.println(accel.testConnection()?"Connection successfull":"Connection failed"); 
+  accel.getMotion6(&ax0,&ay0,&az0,&gx0,&gy0,&gz0); 
+  Serial.println("Initial values"); 
+  Serial.print("ax0=");
+  Serial.print(ax0);
+  Serial.print("\t"); 
+  Serial.print("ay0=");
+  Serial.print(ay0);
+  Serial.print("\t"); 
+  Serial.print("az0=");
+  Serial.print(az0);
+  Serial.print("\t"); 
+  Serial.print("gx0=");
+  Serial.print(gx0);
+  Serial.print("\t"); 
+  Serial.print("gy0=");
+  Serial.print(gy0);
+  Serial.print("\t"); 
+  Serial.print("gz0=");
+  Serial.print(gz0);
+  Serial.print("\t"); 
+  Serial.println("\n"); 
+  }
+  void loop() 
+  {
+    digitalWrite(trig,LOW); 
+    delayMicroseconds(2); 
+    digitalWrite(trig,HIGH); 
+    delayMicroseconds(10); 
+    digitalWrite(trig,LOW); 
+    duration=pulseIn(echo,HIGH); 
+    distance=duration*0.034/2; 
+    Serial.print("Distance: "); 
+    Serial.println(distance); 
+    accel.getMotion6(&ax,&ay,&az,&gx,&gy,&gz); 
+    Serial.print("ax= ");
+    Serial.print(ax); 
+    Serial.print("\t");
+}
+Serial.print("ay= ");
+Serial.print(ay); 
+Serial.print("\t"); 
+Serial.print("az= ");
+Serial.print(az); 
+Serial.print("\t"); 
+Serial.print("gx= ");
+Serial.print(gx); 
+Serial.print("\t"); 
+Serial.print("gy= ");
+Serial.print(gy); 
+Serial.print("\t"); 
+Serial.print("gz= ");
+Serial.print(gz); 
+Serial.print("\t"); 
+if(distance<15)
+{
+  left(); 
+  Serial.println("Obstacle"); 
+  }
+  else 
+  {
+    forward(); 
+    }
+  while(Serial.available()>0) 
+    { 
+      char input=Serial.read(); 
+      if(input=='w'||input=='F') 
+      {
+          forward(); 
+          Serial.println("Forward"); 
+      }
+      else if(input=='a'||input=='L') 
+      {
+          left(); 
+          Serial.println("Leftward"); 
+      }
+      else if(input=='s'||input=='B') 
+      { 
+          backward(); 
+          Serial.println("Backward"); 
+      }
+      else if(input=='d'||input=='R') 
+      {
+          right(); 
+          Serial.println("Rightward"); 
+      }
+      else if(input=='S'||input==' ') 
+      {
+          finish(); 
+          Serial.println("Stopped"); 
+      }
+    }
+   delay(2000); 
+   } 
+   void forward() 
+   {
+      digitalWrite(pin1,LOW); 
+      digitalWrite(pin2,HIGH); 
+      analogWrite(pin3,128);
+      analogWrite(pin4,0); 
+      }
+   void backward() 
+    {
+      digitalWrite(pin1,HIGH); 
+      digitalWrite(pin2,LOW); 
+      analogWrite(pin3,0); 
+      analogWrite(pin4,128); 
+    }
+   void left() 
+    {
+      digitalWrite(pin1,HIGH); 
+      digitalWrite(pin2,LOW); 
+      analogWrite(pin3,128); 
+      analogWrite(pin4,0); 
+      }
+   void right() 
+    {
+      digitalWrite(pin1,LOW); 
+      digitalWrite(pin2,HIGH); 
+      analogWrite(pin3,0); 
+      analogWrite(pin4,128); 
+      }
+   void finish() 
+    {
+      digitalWrite(pin1,LOW); 
+      digitalWrite(pin2,LOW); 
+      digitalWrite(pin3,LOW); 
+      digitalWrite(pin4,LOW); 
+      }
